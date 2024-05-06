@@ -8,6 +8,7 @@
 </head>
 
 <body>
+    @include('shared.success-message')
     <table>
         <tr>
             <th>映画タイトル</th>
