@@ -9,6 +9,7 @@
 
 <body>
     @include('shared.success-message')
+    <a href="{{ route('movie.create') }}">映画を登録する</a>
     <table>
         <tr>
             <th>映画タイトル</th>
@@ -18,6 +19,7 @@
             <th>概要</th>
             <th>登録日時</th>
             <th>更新日時</th>
+            <th>管理</th>
         </tr>
         @foreach ($movies as $movie)
             <tr>
@@ -28,6 +30,7 @@
                 <td>{{ $movie->description }}</td>
                 <td>{{ $movie->created_at }}</td>
                 <td>{{ $movie->updated_at }}</td>
+                <td><a href="{{ route('movie.edit', ['id' => $movie->id]) }}">編集</a></td>
             </tr>
         @endforeach
     </table>
