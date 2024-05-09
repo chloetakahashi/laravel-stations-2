@@ -30,7 +30,14 @@
                 <td>{{ $movie->description }}</td>
                 <td>{{ $movie->created_at }}</td>
                 <td>{{ $movie->updated_at }}</td>
-                <td><a href="{{ route('movie.edit', ['id' => $movie->id]) }}">編集</a></td>
+                <td><a href="{{ route('movie.edit', ['id' => $movie->id]) }}">編集 | </a></td>
+                <td>
+                    <form method="POST" action="{{ route('movie.destroy', ['id' => $movie->id]) }}">
+                        @csrf
+                        @method('delete')
+                        <button onclick="return confirm('削除してよろしいでしょうか？')">削除</button>
+                    </form>
+                </td>
             </tr>
         @endforeach
     </table>
