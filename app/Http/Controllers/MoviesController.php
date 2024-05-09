@@ -65,4 +65,13 @@ class MoviesController extends Controller
 
         return redirect('/admin/movies')->with('success', '映画の編集に成功しました。');
     }
+
+    public function destroy($id)
+    {
+        // Movie::where('id', $id)->first();
+        $movie = Movie::findOrFail($id);
+        $movie->delete();
+
+        return redirect('/admin/movies')->with('success', '映画の削除に成功しました。');
+    }
 }
