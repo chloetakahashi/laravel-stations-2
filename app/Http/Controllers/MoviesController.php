@@ -9,8 +9,8 @@ class MoviesController extends Controller
 {
     public function index()
     {
-        $movies = Movie::all()->sortByDesc('created_at');
-        return view('movies.movies', ['movies' => $movies]);
+        $movies = Movie::latest()->paginate(20);
+        return view('movies.movies', ['movies' => $movies, 'keyword' => null, 'is_showing' => null]);
     }
 
     public function create()
@@ -73,5 +73,31 @@ class MoviesController extends Controller
         $movie->delete();
 
         return redirect('/admin/movies')->with('success', '映画の削除に成功しました。');
+    }
+
+    public function search()
+    {
+        $movies = Movie::orderBy('title', 'ASC');
+        $keyword = '';
+        $isShowing = '';
+        $hasKeyword = request()->has('keyword');
+        if ($hasKeyword) {
+            $keyword = request()->get('keyword', '');
+            $searchKeyword = '%' . $keyword . '%';
+            $movies->where(function ($query) use ($searchKeyword) {
+                $query->where('title', 'like', $searchKeyword)
+                    ->orWhere('description', 'like', $searchKeyword);
+            });
+        }
+
+        if (request()->has('is_showing')) {
+            $isShowing = request()->get('is_showing');
+            if ($isShowing === "0" || $isShowing === "1") {
+                $movies = $movies->where('is_showing', $isShowing);
+            }
+        }
+
+        $movies = $movies->paginate(20);
+        return view('movies.movies', ['movies' => $movies, 'keyword' => $keyword ? $keyword : null, 'is_showing' => $isShowing ? $isShowing : null]);
     }
 }
