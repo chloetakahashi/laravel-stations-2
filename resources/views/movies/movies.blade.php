@@ -9,6 +9,7 @@
 
 <body>
     @include('shared.success-message')
+    @include('shared.search-bar')
     <a href="{{ route('movie.create') }}">映画を登録する</a>
     <table>
         <tr>
@@ -41,6 +42,7 @@
             </tr>
         @endforeach
     </table>
+    {{ $movies->links() }}
 </body>
 
 </html>
