@@ -15,5 +15,11 @@ class Movie extends Model
         'published_year',
         'is_showing',
         'description',
+        'genre',
     ];
+
+    public function genre()
+    {
+        return $this->belongsTo(Genre::class);
+    }
 }
