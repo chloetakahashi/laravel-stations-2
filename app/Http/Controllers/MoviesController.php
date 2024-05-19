@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Log;
+use App\Models\Genre;
 use App\Models\Movie;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class MoviesController extends Controller
 {
     public function index()
     {
-        $movies = Movie::latest()->paginate(20);
+        $movies = Movie::orderBy('title', 'ASC')->paginate(20);
         return view('movies.movies', ['movies' => $movies, 'keyword' => null, 'is_showing' => null]);
     }
 
@@ -20,23 +23,39 @@ class MoviesController extends Controller
 
     public function store(Request $request)
     {
-        // dump(request()->get('title', ''));
-        request()->validate([
-            'title' => 'required|unique:movies,title',
-            'image_url' => 'url',
-            'published_year' => 'integer',
-            'is_showing' => 'required',
-            'description' => 'required',
-        ]);
-        $movie = new Movie();
-        $movie->title = $request->input('title');
-        $movie->image_url = $request->input('image_url');
-        $movie->published_year = $request->input('published_year');
-        $movie->is_showing = $request->input('is_showing');
-        $movie->description = $request->input('description');
-        $movie->save();
+        try {
+            DB::transaction(function () use ($request) {
+                $movie = new Movie();
+                if (!empty($request->input('genre'))) {
+                    $genre = Genre::firstOrCreate(['name' => $request->input('genre')]);
+                }
+                // dump(request()->get('title', ''));
+                request()->validate([
+                    'title' => 'required|unique:movies,title|max:50',
+                    'image_url' => 'url',
+                    'published_year' => 'integer',
+                    'genre' => 'required|string',
+                    'is_showing' => 'required',
+                    'description' => 'required',
+                ]);
+                $movie->title = $request->input('title');
+                $movie->image_url = $request->input('image_url');
+                $movie->published_year = $request->input('published_year');
+                $movie->is_showing = $request->input('is_showing');
+                $movie->description = $request->input('description');
 
-        return redirect('/admin/movies')->with('success', '映画の登録に成功しました。');
+                if ($genre != null) {
+                    $movie->genre_id = $genre ? $genre->id : null;
+                }
+                $movie->save();
+            });
+            return redirect('/admin/movies')->with('success', '映画の登録に成功しました。');
+        } catch (\Exception $e) {
+            // return redirect()->back()->withInput()->with('error', '映画の登録に失敗しました。');
+            // return response()->json(['error' => '映画の登録に失敗しました。'], 500);
+            DB::rollback();
+            throw $e;
+        }
     }
 
     public function edit($id)
@@ -48,20 +67,29 @@ class MoviesController extends Controller
 
     public function update(Request $request, $id)
     {
-        $movie = Movie::findOrFail($id);
-        request()->validate([
-            'title' => 'required|unique:movies,title',
-            'image_url' => 'url',
-            'published_year' => 'integer',
-            'is_showing' => 'required',
-            'description' => 'required',
-        ]);
-        $movie->title = $request->input('title');
-        $movie->image_url = $request->input('image_url');
-        $movie->published_year = $request->input('published_year');
-        $movie->is_showing = $request->input('is_showing');
-        $movie->description = $request->input('description');
-        $movie->save();
+        DB::transaction(function () use ($request, $id) {
+            $movie = Movie::findOrFail($id);
+
+            if (!empty($request->input('genre')) && $request->input('genre') != $movie->genre?->name) {
+                $genre = Genre::updateOrCreate(['name' => $request->input('genre')]);
+                $movie->genre_id = $genre->id;
+            }
+            request()->validate([
+                // 'title' => 'required|max:50|unique:movies,title,' . $movie->id,
+                'title' => 'required|max:50|unique:movies,title',
+                'image_url' => 'url',
+                'published_year' => 'integer',
+                'genre' => 'required|required',
+                'is_showing' => 'required',
+                'description' => 'required',
+            ]);
+            $movie->title = $request->input('title');
+            $movie->image_url = $request->input('image_url');
+            $movie->published_year = $request->input('published_year');
+            $movie->is_showing = $request->input('is_showing');
+            $movie->description = $request->input('description');
+            $movie->save();
+        });
 
         return redirect('/admin/movies')->with('success', '映画の編集に成功しました。');
     }
