@@ -1,8 +1,9 @@
 <?php
 
-use App\Http\Controllers\PracticeController;
-use App\Http\Controllers\MoviesController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\MoviesController;
+use App\Http\Controllers\SheetsController;
+use App\Http\Controllers\PracticeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,3 +33,5 @@ Route::post('/admin/movies/store', [MoviesController::class, 'store'])->name('mo
 Route::get('/admin/movies/{id}/edit', [MoviesController::class, 'edit'])->name('movie.edit');
 Route::patch('/admin/movies/{id}/update', [MoviesController::class, 'update'])->name('movie.update');
 Route::delete('/admin/movies/{id}/destroy', [MoviesController::class, 'destroy'])->name('movie.destroy');
+
+Route::get('/sheets', [SheetsController::class, 'index']);
