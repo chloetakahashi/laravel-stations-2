@@ -1,5 +1,9 @@
 @if (session()->has('success'))
     <div>
         {{ session('success') }}
-    </div>
+    </div> 
+@elseif (session()->has('error'))
+<div>
+    {{ session('error') }}
+</div> 
 @endif

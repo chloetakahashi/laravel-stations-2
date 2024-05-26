@@ -16,6 +16,11 @@
     @error('published_year')
         <span>{{ $message }}</span>
     @enderror
+    <div>ジャンル</div>
+    <input type="text" id="genre" name="genre">
+    @error('genre')
+        <span>{{ $message }}</span>
+    @enderror
     <div>公開中かどうか</div>
     <input type="checkbox" name="is_showing" id="is_showing_0" value="0">上映予定
     <input type="checkbox" name="is_showing" id="is_showing_1" value="1">上映中

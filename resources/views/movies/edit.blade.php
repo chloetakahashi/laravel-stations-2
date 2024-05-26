@@ -17,6 +17,11 @@
     @error('published_year')
         <span>{{ $message }}</span>
     @enderror
+    <div>ジャンル</div>
+    <input type="text" id="genre" name="genre" value="{{ $movie->genre?->name }}">
+    @error('genre')
+        <span>{{ $message }}</span>
+    @enderror
     <div>公開中かどうか</div>
     <input type="checkbox" name="is_showing" id="is_showing_0" value="0"
         {{ $movie->is_showing == 0 ? 'checked' : '' }}>

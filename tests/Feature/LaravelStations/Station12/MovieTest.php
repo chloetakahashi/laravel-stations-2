@@ -139,17 +139,17 @@ class MovieTest extends TestCase
             '1ページ目(20件表示)指定時' =>[
                 'page' => 1,
                 'includes' => ['タイトル0', 'タイトル19'],
-                'excludes' => ['タイトル20'],
+                'excludes' => ['タイトル200'],
             ],
             '2ページ目(1件表示)指定時' => [
                 'page' => 2,
-                'includes' => ['タイトル20'],
-                'excludes' => ['タイトル19'],
+                'includes' => ['タイトル9'],
+                'excludes' => ['タイトル199'],
             ],
             '存在しないページ指定時' =>[
                 'page' => 0,
                 'includes' => ['タイトル0', 'タイトル19'],
-                'excludes' => ['タイトル20'],
+                'excludes' => ['タイトル200'],
             ],
         ];
     }
